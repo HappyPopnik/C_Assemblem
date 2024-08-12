@@ -12,6 +12,26 @@ int isComment(char* line)
 	return line[0] == ';';
 }
 
+int isNewLine(char* line)
+{
+    return line[0] == '\n';
+}
+
+int containsCommaOrSpace(char* pos)
+{
+    char* str = pos;
+    while (*str) {
+        if (*str == ',') {
+            return 1;
+        }
+        if (isspace((unsigned char)*str)) {
+            return 1; 
+        }
+        str++;
+    }
+    return 0;
+}
+
 void remove_all_spaces(char* str) {
     char* src = str;
     char* dst = str;
@@ -114,4 +134,13 @@ char* trimAllWhitespace(char* str) {
     *(end + 1) = '\0';
 
     return start;
+}
+
+void removeNewLine(char* str) {
+    char* end = str + strlen(str) - 1;
+
+    // Check if the last character is '\n' and replace it with '\0'
+    if (end >= str && *end == '\n') {
+        *end = '\0';
+    }
 }

@@ -1,7 +1,6 @@
-
-
 typedef struct {
-    int bits : 15;
+    unsigned int bits : 15;
+    char* symb_name;
 } Word;
 
 typedef struct {

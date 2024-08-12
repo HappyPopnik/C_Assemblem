@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "firstPass.h"
 #include "utilities.h"
-#include "memory_structs.h"
 #include "operations.h"
 
 void symbolExists(SymbolList* head, const char* name) {
@@ -75,10 +74,14 @@ void printLinkedList(SymbolList* head) {
 	}
 }
 
-void printWordArray(MemoryArray* wordArray) {
-	for (int i = 0; i < wordArray->size; ++i) {
-		printf("Word %d: bits = %d, mem_res = %d, location = %p\n",
-			i, wordArray->marray[i].bits, i, (void*)&wordArray->marray[i]);
+void printWordArray(MemoryArray* wordArray, int j) {
+	for (int i = 0; i < wordArray->size; ++i) 
+	{
+		printf("Word %d: bits = %d, mem_res = %d, location = %p\n", i, wordArray->marray[i].bits, i, (void*)&wordArray->marray[i]);
+		if (wordArray->marray[i].bits == 0 && j==2)
+		{
+			printf("Label: %s\n", wordArray->marray[i].symb_name);
+		}
 	}
 }
 
@@ -93,6 +96,7 @@ void startFirstPass(FILE* sourcefp)
 	SymbolList* data_symbols = NULL;
 	SymbolList* extern_symbols = NULL;
 	SymbolList* entry_symbols = NULL;
+	//SymbolList** instruction_list;
 	int is_symbol_flag = 0;
 	char line[MAX_LINE_LENGTH];
 	char label[MAX_LABEL_LENGTH];
@@ -105,10 +109,11 @@ void startFirstPass(FILE* sourcefp)
 	{
 		checkMemorySize(data_array->size, instruction_array->size);
 		char* trimmedLine = trimWhiteSpaceFromStart(line);
-		if (isComment(trimmedLine))
+		if (isComment(trimmedLine) || isNewLine(line)) /* If it is a command line or nothing at all*/
 			continue;
 		char* colon_pos = strchr(line, ':');
 		char* start_pos = line;
+		removeNewLine(start_pos);
 		if (colon_pos != NULL) { /*There is a label*/
 			is_symbol_flag = 1;
 			size_t label_length = colon_pos - line;
@@ -144,9 +149,6 @@ void startFirstPass(FILE* sourcefp)
 				start_pos = start_pos + 5;
 				parse_numbers(start_pos, numbersdataarray, &numbersdatacount);
 				iterating_index = 0;
-				//for (int i = 0; i < sizeof(numbersdataarray); i++) {
-				//	printf("%d\n", numbersdataarray[i]);
-				//}
 				for (int i = 0; i < numbersdatacount; i++)
 				{
 					moveToMem.bits = numbersdataarray[iterating_index];
@@ -236,34 +238,42 @@ void startFirstPass(FILE* sourcefp)
 			{
 				data_type = CODE;
 				symbolExists(data_symbols, label);
-				addSymbolToTable(&data_symbols, label, ic+100, data_type);
+				addSymbolToTable(&data_symbols, label, ic + 100, data_type);
 				start_pos = colon_pos + 1;
 				jumpSpaceSepatation(&start_pos);
-				int operation_index = operationExistsInOParray(start_pos);
-				if (operation_index == 0)
+			}
+			int operation_index = operationExistsInOParray(start_pos);
+			if (operation_index == 0)
+			{
+				printf("Invalid operation");
+				exit(1);
+			}
+			else
+			{
+				Word* words_to_mem;
+				int amount;
+				words_to_mem = MakeWord(start_pos, operation_index, &amount);
+				int L = amount;
+				while (amount > 0)
 				{
-					printf("Invalid operation");
-					exit(1);
-				}
-				else
-				{
-					int expected_args = operations[operation_index].arguments;
-					start_pos = start_pos + sizeof(operations[operation_index].operation_name);
-					
+					moveToMem = *words_to_mem;
+					words_to_mem++;
+					amount--;
+					addWord(instruction_array, moveToMem);
 				}
 			}
-			
-
 		}
 	}
 	printf("**********************\n");
-	printLinkedList(data_symbols);
+	printLinkedList(data_symbols, 0);
 	printf("**********************\n");
-	printLinkedList(entry_symbols);
+	printLinkedList(entry_symbols, 0);
 	printf("**********************\n");
-	printLinkedList(extern_symbols);
+	printLinkedList(extern_symbols, 0);
 	printf("**********************\n");
-	printWordArray(data_array);
+	printWordArray(data_array, 0);
+	printf("**********************\n");
+	printWordArray(instruction_array, 2);
 	printf("**********************\n");
 	
 }

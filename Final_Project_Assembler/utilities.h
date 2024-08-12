@@ -6,6 +6,24 @@
 
 #define MAX_LABEL_LENGTH 31
 
+#define BIN_TO_INT(b) ( \
+    ((b & 0b1) << 0) | \
+    ((b & 0b10) >> 1) | \
+    ((b & 0b100) >> 2) | \
+    ((b & 0b1000) >> 3) | \
+    ((b & 0b10000) >> 4) | \
+    ((b & 0b100000) >> 5) | \
+    ((b & 0b1000000) >> 6) | \
+    ((b & 0b10000000) >> 7) | \
+    ((b & 0b100000000) >> 8) | \
+    ((b & 0b1000000000) >> 9) | \
+    ((b & 0b10000000000) >> 10) | \
+    ((b & 0b100000000000) >> 11) | \
+    ((b & 0b1000000000000) >> 12) | \
+    ((b & 0b10000000000000) >> 13) | \
+    ((b & 0b100000000000000) >> 14) \
+)
+
 static char* saved_names[] = {
 	"mov",
 	"cmp",
@@ -44,3 +62,5 @@ int isComment(char* line);
 void remove_all_spaces(char* str);
 void parse_numbers(const char* input, int* numbers, int* count);
 char* trimAllWhitespace(char* str);
+int isNewLine(char* line);
+void removeNewLine(char* str);
