@@ -144,6 +144,7 @@
     <ClCompile Include="memory_structs.c" />
     <ClCompile Include="operations.c" />
     <ClCompile Include="preprocessor.c" />
+    <ClCompile Include="secondPass.c" />
     <ClCompile Include="utilities.c" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +152,7 @@
     <ClInclude Include="memory_structs.h" />
     <ClInclude Include="operations.h" />
     <ClInclude Include="preprocessor.h" />
+    <ClInclude Include="secondPass.h" />
     <ClInclude Include="utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,6 +2,7 @@
 #include "firstPass.h"
 #include "utilities.h"
 #include "operations.h"
+#include "secondPass.h"
 
 void symbolExists(SymbolList* head, const char* name) {
 	SymbolList* current = head;
@@ -275,5 +276,8 @@ void startFirstPass(FILE* sourcefp)
 	printf("**********************\n");
 	printWordArray(instruction_array, 2);
 	printf("**********************\n");
+
+	/* Finish first pass, moving to second pass */
+	startSecondPass(data_symbols, entry_symbols, extern_symbols, data_array, instruction_array);
 	
 }

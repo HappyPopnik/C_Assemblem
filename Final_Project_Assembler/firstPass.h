@@ -8,11 +8,6 @@
 
 #define CODE 5
 
-typedef struct SymbolList {
-    char* label;
-    int data_type;
-    int dc;
-    struct SymbolList* next;
-} SymbolList;
+
 
 void startFirstPass(FILE* sourcefp);
