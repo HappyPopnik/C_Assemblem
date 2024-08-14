@@ -144,3 +144,18 @@ void removeNewLine(char* str) {
         *end = '\0';
     }
 }
+char* to_15bit_binary(int n) {
+    static char binary_str[16]; // 15 bits + null terminator
+    int i;
+
+    if (n < 0 || n > 32767) { // 15-bit maximum value
+        return NULL; // Out of range
+    }
+
+    for (i = 0; i < 15; i++) {
+        binary_str[i] = (n & (1 << (14 - i))) ? '1' : '0';
+    }
+
+    binary_str[15] = '\0'; // Null terminator
+    return binary_str;
+}

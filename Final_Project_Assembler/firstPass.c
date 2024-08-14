@@ -78,7 +78,7 @@ void printLinkedList(SymbolList* head) {
 void printWordArray(MemoryArray* wordArray, int j) {
 	for (int i = 0; i < wordArray->size; ++i) 
 	{
-		printf("Word %d: bits = %d, mem_res = %d, location = %p\n", i, wordArray->marray[i].bits, i, (void*)&wordArray->marray[i]);
+		printf("Word %d: bits = %s, mem_res = %d, location = %p\n", i, to_15bit_binary(wordArray->marray[i].bits), i, (void*)&wordArray->marray[i]);
 		if (wordArray->marray[i].bits == 0 && j==2)
 		{
 			printf("Label: %s\n", wordArray->marray[i].symb_name);
@@ -205,12 +205,15 @@ void startFirstPass(FILE* sourcefp)
 				start_pos = start_pos + 7;
 				jumpSpaceSepatation(&start_pos);
 				char* label_ptr = label;
+				int count = 0;
 				while (*start_pos != '\0') {
 					*label_ptr++ = *start_pos++;
+					count++;
 				}
-				*(label_ptr - 1) = '\0'; /*Add null terminator instead of \n*/
-				symbolExists(data_symbols, label); /*Check if the new symbol already exists*/
-				addSymbolToTable(&extern_symbols, label, 0, data_type); /*Add the symbol to the symbol table*/
+				*label_ptr = '\0'; /*Add null terminator instead of \n*/
+				label_ptr = label_ptr - count;
+				symbolExists(extern_symbols, label_ptr); /*Check if the new symbol already exists*/
+				addSymbolToTable(&extern_symbols, label_ptr, 0, data_type); /*Add the symbol to the symbol table*/
 			}
 			else if (strncmp(start_pos, ".entry", 6) == 0)
 			{
@@ -218,12 +221,15 @@ void startFirstPass(FILE* sourcefp)
 				start_pos = start_pos + 6;
 				jumpSpaceSepatation(&start_pos);
 				char* label_ptr = label;
+				int count = 0;
 				while (*start_pos != '\0') {
 					*label_ptr++ = *start_pos++;
+					count++;
 				}
-				*(label_ptr - 1) = '\0'; /*Add null terminator instead of \n*/
-				symbolExists(entry_symbols, label); /*Check if the new symbol already exists*/
-				addSymbolToTable(&entry_symbols, label, 0, data_type); /*Add the symbol to the symbol table*/
+				*label_ptr = '\0'; /* Add null terminator instead of \n */
+				label_ptr = label_ptr - count;
+				symbolExists(entry_symbols, label_ptr); /*Check if the new symbol already exists*/
+				addSymbolToTable(&entry_symbols, label_ptr, 0, data_type); /*Add the symbol to the symbol table*/
 			}
 			if (is_symbol_flag && (data_type == DATA || data_type == STRING))
 			{

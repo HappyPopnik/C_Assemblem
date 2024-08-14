@@ -5,8 +5,8 @@
 
 int main()
 {
-    FILE* file = fopen("C:\\Users\\okopn\\Desktop\\university\\clab\\test.txt", "r");
-    FILE* file2 = fopen("C:\\Users\\okopn\\Desktop\\university\\clab\\test2.txt", "w");
+    FILE* file = fopen("C:\\Users\\okopn\\Desktop\\university\\clab\\real_test.txt", "r");
+    FILE* file2 = fopen("C:\\Users\\okopn\\Desktop\\university\\clab\\real_test2.txt", "w");
 
     if (!file) {
         perror("Failed to open file");
@@ -14,7 +14,7 @@ int main()
     }
     preprocessFile(file, file2);
     fclose(file2);
-    FILE* file3 = fopen("C:\\Users\\okopn\\Desktop\\university\\clab\\test2.txt", "r");
+    FILE* file3 = fopen("C:\\Users\\okopn\\Desktop\\university\\clab\\real_test2.txt", "r");
     startFirstPass(file3);
     return 0;
 }

@@ -64,3 +64,4 @@ void parse_numbers(const char* input, int* numbers, int* count);
 char* trimAllWhitespace(char* str);
 int isNewLine(char* line);
 void removeNewLine(char* str);
+char* to_15bit_binary(int n);

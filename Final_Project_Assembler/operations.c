@@ -49,13 +49,14 @@ int getAddressingOption(char *position)
     {
         for (int i = 0; i < NUM_OF_REGISTERS; i++)
         {
-            if (!(strncmp(position + 1, registries[i].registry_name, 2) == 0))
+            if (strncmp(position + 1, registries[i].registry_name, 2) == 0)
             {
-                printf("Invalid Register name!");
-                exit(1);
+                return INDIRECT_REG_ADDRESSING;
             }
         }
-        return INDIRECT_REG_ADDRESSING;
+        printf("Invalid Register name!");
+        exit(1);
+        
     }
     else
     {
@@ -97,20 +98,26 @@ int getIntRegFromOperand(char *pos)
     return number;
 }
 
-int operandIncoding(int delivery_opt, char *pos)
+int operandIncoding(int delivery_opt, char *pos, int is_dest)
 {
     int word_encoding = 0;
     if (delivery_opt == IMMIDIATE_ADDRESSING)
     {
         pos++;
         int value = formatDirectOperandToInt(pos);
-        word_encoding = word_encoding + (value << 3);
+        if(is_dest)
+            word_encoding = word_encoding + (value << 3);
+        else
+            word_encoding = word_encoding + (value << 6);
         word_encoding = word_encoding + A_FLAG;
     }
     else if ((delivery_opt == INDIRECT_REG_ADDRESSING) || (delivery_opt == DIRECT_REG_ADDRESSING))
     {
         int regnum = getIntRegFromOperand(pos);
-        word_encoding = word_encoding + (regnum << 3);
+        if (is_dest)
+            word_encoding = word_encoding + (regnum << 3);
+        else
+            word_encoding = word_encoding + (regnum << 6);
         word_encoding = word_encoding + A_FLAG;
     }
     /* We will do DIRECT_ADDRESSING at second pass. */
@@ -165,10 +172,19 @@ Word* MakeWord(char* pos, int operation_index, int *size)
                 *word_list = instruction_word;
                 word_encoding = 0;
                 /* Now encode the next word. */
-                word_encoding = operandIncoding(delivery_opt, pos);
+                int is_dest = 1;
+                word_encoding = operandIncoding(delivery_opt, pos, is_dest);
                 if (delivery_opt == DIRECT_ADDRESSING)
                 {
-                    dest_word.symb_name = pos;
+                    char* label = malloc(strlen(pos));
+                    char* orig_label = label;
+                    while (*pos != '\0' && *pos != ',' && *pos != ' ') {
+                        *label++ = *pos++;
+                    }
+                    *label = '\0';
+                    label = orig_label;
+                    dest_word.symb_name = label;
+                    printf("1");
                 }
                 dest_word.bits = word_encoding;
                 word_list_position++;
@@ -235,36 +251,41 @@ Word* MakeWord(char* pos, int operation_index, int *size)
                 }
                 else {
                     *size = 3;
-                    word_encoding = operandIncoding(src_delivery_opt, pos);
+                    int is_dest = 0;
+                    word_encoding = operandIncoding(src_delivery_opt, pos, is_dest);
                     src_word.bits = word_encoding;
                     if (src_delivery_opt == DIRECT_ADDRESSING)
                     {
                         char* label = malloc(strlen(pos));
+                        char* orig_label = label;
                         int count = 0;
-                        while (*pos != '\0' && *pos != ',') {
+                        while (*pos != '\0' && *pos != ',' && *pos != ' ') {
                             *label++ = *pos++;
-                            count++;
                         }
                         *label = '\0';
-                        label = label - count;
+                        label = orig_label;
                         src_word.symb_name = label;
+                        printf("1");
                     }
                     word_list_position++;
                     *word_list_position = src_word;
                     word_encoding = 0;
-                    word_encoding = operandIncoding(dest_delivery_opt, start_of_operand_2);
+                    is_dest = 1;
+                    word_encoding = operandIncoding(dest_delivery_opt, start_of_operand_2, is_dest);
                     dest_word.bits = word_encoding;
                     if (dest_delivery_opt == DIRECT_ADDRESSING)
                     {
-                        char* label = malloc(strlen(start_of_operand_2));
+                        char *label = malloc(strlen(start_of_operand_2)+1);
+                        char *orig_label = label;
                         int count = 0;
-                        while (*start_of_operand_2 != '\0') {
+                        while (*start_of_operand_2 != '\0' ) {
                             *label++ = *start_of_operand_2++;
                             count++;
                         }
                         *label = '\0';
-                        label = label - count;
+                        label = orig_label;
                         dest_word.symb_name = label;
+                        printf("1");
                     }
                     word_list_position++;
                     *word_list_position = dest_word;

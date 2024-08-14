@@ -11,7 +11,7 @@ void iterateThroughMemArray(MemoryArray* wordArray, SymbolList* data_symbols, Sy
 			int found_symbol = 0;
 			char* label_name = wordArray->marray[i].symb_name;
 			SymbolList* symbols_pos = data_symbols;
-			while ((symbols_pos != NULL) && (!found_symbol)) {
+			while (symbols_pos != NULL) {
 				if (strcmp(symbols_pos->label, label_name) == 0)
 				{
 					/* Found the label is data symbols list */
@@ -22,6 +22,7 @@ void iterateThroughMemArray(MemoryArray* wordArray, SymbolList* data_symbols, Sy
 					wordArray->marray[i].bits = word_encoding;
 					printf("test");
 					found_symbol = 1;
+					break;
 				}
 				symbols_pos = symbols_pos->next;
 			}
@@ -29,7 +30,7 @@ void iterateThroughMemArray(MemoryArray* wordArray, SymbolList* data_symbols, Sy
 			/* If not found symbol in data symbols, look at external symbols */
 			{
 				SymbolList* symbols_pos = external_symbols;
-				while ((symbols_pos != NULL) && (!found_symbol)) {
+				while ((symbols_pos != NULL)) {
 					if (strcmp(symbols_pos->label, label_name) == 0)
 					{
 						/* Found the label is data symbols list */
@@ -38,12 +39,14 @@ void iterateThroughMemArray(MemoryArray* wordArray, SymbolList* data_symbols, Sy
 						word_encoding = word_encoding + E_FLAG;
 						wordArray->marray[i].bits = word_encoding;
 						found_symbol = 1;
+						break;
 					}
+					symbols_pos = symbols_pos->next;
 				}
 				if (!found_symbol)
 				/* if not found in external, its not anywhere. Illegal label detected. */
 				{
-					printf("label not found in symbol table.");
+					printf("label %s not found in symbol table.", label_name);
 					exit(1);
 				}
 			}
@@ -62,9 +65,9 @@ void startSecondPass(SymbolList* data_symbols, SymbolList* entry_symbols,
 	printLinkedList(entry_symbols, 0);
 	printf("**********************\n");
 	printLinkedList(extern_symbols, 0);
-	printf("**********************\n");
+	printf("**********************\nData array: \n");
 	printWordArray(data_array, 0);
-	printf("**********************\n");
+	printf("**********************\ninstruction array: \n");
 	printWordArray(instruction_array, 2);
 	printf("**********************\n");
 
