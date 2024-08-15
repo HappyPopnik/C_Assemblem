@@ -36,6 +36,9 @@
     <ClCompile Include="secondPass.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="outputBuilder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="preprocessor.h">
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="secondPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="outputBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

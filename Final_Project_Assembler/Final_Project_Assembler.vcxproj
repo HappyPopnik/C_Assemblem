@@ -143,6 +143,7 @@
     <ClCompile Include="firstPass.c" />
     <ClCompile Include="memory_structs.c" />
     <ClCompile Include="operations.c" />
+    <ClCompile Include="outputBuilder.c" />
     <ClCompile Include="preprocessor.c" />
     <ClCompile Include="secondPass.c" />
     <ClCompile Include="utilities.c" />
@@ -151,6 +152,7 @@
     <ClInclude Include="firstPass.h" />
     <ClInclude Include="memory_structs.h" />
     <ClInclude Include="operations.h" />
+    <ClInclude Include="outputBuilder.h" />
     <ClInclude Include="preprocessor.h" />
     <ClInclude Include="secondPass.h" />
     <ClInclude Include="utilities.h" />

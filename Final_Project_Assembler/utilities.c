@@ -159,3 +159,8 @@ char* to_15bit_binary(int n) {
     binary_str[15] = '\0'; // Null terminator
     return binary_str;
 }
+
+void intToOctalString(int num, char* str) {
+    // Format as 5 characters wide, padded with zeros
+    snprintf(str, 6, "%05o", num);
+}

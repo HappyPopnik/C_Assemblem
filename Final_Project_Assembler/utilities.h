@@ -6,6 +6,16 @@
 
 #define MAX_LABEL_LENGTH 31
 
+#define DATA 1
+
+#define STRING 2
+
+#define EXTERNAL 3
+
+#define ENTRY 4
+
+#define CODE 5
+
 #define BIN_TO_INT(b) ( \
     ((b & 0b1) << 0) | \
     ((b & 0b10) >> 1) | \
@@ -65,3 +75,4 @@ char* trimAllWhitespace(char* str);
 int isNewLine(char* line);
 void removeNewLine(char* str);
 char* to_15bit_binary(int n);
+void intToOctalString(int num, char* str);

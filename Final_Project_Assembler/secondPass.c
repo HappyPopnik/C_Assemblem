@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "secondPass.h"
 #include "operations.h"
+#include "outputBuilder.h"
 
 void iterateThroughMemArray(MemoryArray* wordArray, SymbolList* data_symbols, SymbolList* external_symbols) {
 	for (int i = 0; i < wordArray->size; ++i)
@@ -58,6 +59,8 @@ void startSecondPass(SymbolList* data_symbols, SymbolList* entry_symbols,
 	SymbolList* extern_symbols, MemoryArray* data_array, MemoryArray* instruction_array)
 {
 	iterateThroughMemArray(instruction_array, data_symbols, extern_symbols);
+
+	makeOutputFiles(data_symbols, entry_symbols, extern_symbols, data_array, instruction_array);
 
 	printf("*******************************************************\n");
 	printLinkedList(data_symbols, 0);

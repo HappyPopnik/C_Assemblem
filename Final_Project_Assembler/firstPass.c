@@ -63,6 +63,19 @@ void jumpSpaceSepatation(char** line_pos)
 	}
 }
 
+void increaseDataSymbolsByIC(SymbolList *symbols, int ic)
+{
+	SymbolList* current = symbols;
+	while (current != NULL)
+	{
+		if (current->data_type == DATA  || current->data_type == STRING)
+		{
+			current->dc = current->dc + ic + 101;
+		}
+		current = current->next;
+	}
+}
+
 /*To delete*/
 void printLinkedList(SymbolList* head) {
 	SymbolList* current = head;
@@ -206,10 +219,17 @@ void startFirstPass(FILE* sourcefp)
 				jumpSpaceSepatation(&start_pos);
 				char* label_ptr = label;
 				int count = 0;
+				int spacecount = 0;
 				while (*start_pos != '\0') {
+					if (*start_pos == ' ')
+					{
+						*start_pos++;
+						continue;
+					}
 					*label_ptr++ = *start_pos++;
 					count++;
 				}
+				label_ptr = label_ptr - spacecount;
 				*label_ptr = '\0'; /*Add null terminator instead of \n*/
 				label_ptr = label_ptr - count;
 				symbolExists(extern_symbols, label_ptr); /*Check if the new symbol already exists*/
@@ -223,6 +243,11 @@ void startFirstPass(FILE* sourcefp)
 				char* label_ptr = label;
 				int count = 0;
 				while (*start_pos != '\0') {
+					if (*start_pos == ' ')
+					{
+						*start_pos++;
+						continue;
+					}
 					*label_ptr++ = *start_pos++;
 					count++;
 				}
@@ -240,6 +265,7 @@ void startFirstPass(FILE* sourcefp)
 		else /* '.' not found - command line*/
 		{
 			char* start_pos = line;
+			start_pos = trimWhiteSpaceFromStart(line);
 			ic = instruction_array->size;
 			if (is_symbol_flag) /* Command and with label */
 			{
@@ -252,7 +278,7 @@ void startFirstPass(FILE* sourcefp)
 			int operation_index = operationExistsInOParray(start_pos);
 			if (operation_index == 0)
 			{
-				printf("Invalid operation");
+				printf("Invalid operation: %s", start_pos);
 				exit(1);
 			}
 			else
@@ -271,6 +297,7 @@ void startFirstPass(FILE* sourcefp)
 			}
 		}
 	}
+	increaseDataSymbolsByIC(data_symbols, ic);
 	printf("**********************\n");
 	printLinkedList(data_symbols, 0);
 	printf("**********************\n");
