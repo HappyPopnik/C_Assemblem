@@ -55,10 +55,31 @@ void iterateThroughMemArray(MemoryArray* wordArray, SymbolList* data_symbols, Sy
 	}
 }
 
+void formatEntries(SymbolList* entry_symbols, SymbolList* data_symbols)
+{
+	SymbolList* entry_current = entry_symbols;
+	while (entry_current != NULL)
+	{
+		char* label = entry_current->label;
+		SymbolList* data_current = data_symbols;
+		while (data_current != NULL)
+		{
+			if (strcmp(data_current->label, label) == 0)
+			{
+				entry_current->dc = data_current->dc;
+			}
+			data_current = data_current->next;
+		}
+		entry_current = entry_current->next;
+	}
+}
+
 void startSecondPass(SymbolList* data_symbols, SymbolList* entry_symbols,
 	SymbolList* extern_symbols, MemoryArray* data_array, MemoryArray* instruction_array)
 {
 	iterateThroughMemArray(instruction_array, data_symbols, extern_symbols);
+
+	formatEntries(entry_symbols, data_symbols);
 
 	makeOutputFiles(data_symbols, entry_symbols, extern_symbols, data_array, instruction_array);
 

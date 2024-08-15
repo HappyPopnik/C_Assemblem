@@ -26,16 +26,13 @@ void makeObjectFile(FILE* file, MemoryArray* data_array, MemoryArray* instructio
 
 void makeEntriesFile(FILE* file, SymbolList* entry_symbols, SymbolList* data_symbols)
 {
-	SymbolList *current = entry_symbols;
-	while (current != NULL)
+	SymbolList *entry_current = entry_symbols;
+	while (entry_current != NULL)
 	{
-		if (current->data_type == ENTRY) // instead - get the dc from symbol list
-		{
-			char* label = current->label;
-			int location = current->dc;
-			fprintf(file, "%s %d\n", label, location);
-		}
-		current = current->next;
+		char* label = entry_current->label;
+		int mem_res = entry_current->dc;
+		fprintf(file, "%s %d\n", label, mem_res);
+		entry_current = entry_current->next;
 	}
 	fclose(file);
 }
