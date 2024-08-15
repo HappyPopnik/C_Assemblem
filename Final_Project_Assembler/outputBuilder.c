@@ -12,13 +12,13 @@ void makeObjectFile(FILE* file, MemoryArray* data_array, MemoryArray* instructio
 	{
 		char octalist[6];
 		intToOctalString(instruction_array->marray[i].bits, octalist);
-		fprintf(file, "%d %s\n", i + 100, octalist);
+		fprintf(file, "%04d %s\n", i + 100, octalist);
 	}
 	for (int j = 0; j < data_array->size; j++)
 	{
 		char octalist[6];
 		intToOctalString(data_array->marray[j].bits, octalist);
-		fprintf(file, "%d %s\n", i + 100, octalist);
+		fprintf(file, "%04d %s\n", i + 100, octalist);
 		i++;
 	}
 	fclose(file);
