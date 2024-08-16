@@ -22,7 +22,6 @@ void iterateThroughMemArray(MemoryArray* wordArray, SymbolList* data_symbols, Sy
 					word_encoding = word_encoding + R_FLAG;
 					word_encoding = word_encoding + (symbols_pos->dc << 3);
 					wordArray->marray[i].bits = word_encoding;
-					printf("test");
 					found_symbol = 1;
 					break;
 				}
@@ -116,19 +115,4 @@ void startSecondPass(SymbolList* data_symbols, SymbolList* entry_symbols,
 	formatExterns(extern_symbols, instruction_array);
 
 	makeOutputFiles(data_symbols, entry_symbols, extern_symbols, data_array, instruction_array, filename);
-
-	/*
-	printf("*******************************************************\n");
-	printLinkedList(data_symbols, 0);
-	printf("**********************\n");
-	printLinkedList(entry_symbols, 0);
-	printf("**********************\n");
-	printLinkedList(extern_symbols, 0);
-	printf("**********************\nData array: \n");
-	printWordArray(data_array, 0);
-	printf("**********************\ninstruction array: \n");
-	printWordArray(instruction_array, 2);
-	printf("**********************\n");
-	*/
-
 }

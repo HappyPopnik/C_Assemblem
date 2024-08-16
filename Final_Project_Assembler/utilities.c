@@ -1,5 +1,6 @@
 #include "utilities.h"
 #include <stdio.h>
+#include "errors.h"
 
 char* trimWhiteSpaceFromStart(char* str)
 {
@@ -63,31 +64,13 @@ void remove_all_spaces(char* str) {
     *dst = '\0'; // Null-terminate the modified string
 }
 
-void parse_numbers(const char* input, int* numbers, int* count) {
-    // Make a copy of the input string to work with
+void parse_numbers(const char* input, int* numbers, int* count, int line) {
     *numbers = NULL;
     char* str = strdup(input);
     char* token;
     *count = 0;
 
-    // Remove all spaces except those between numbers
     remove_all_spaces(str);
-
-    // Check if the string is empty after processing
-    if (strlen(str) == 0) {
-        printf("Error: Input string is empty or invalid.\n");
-        free(str);
-        exit(0);
-    }
-
-    // Check for consecutive commas without numbers
-    for (size_t i = 0; i < strlen(str) - 1; i++) {
-        if (str[i] == ',' && str[i + 1] == ',') {
-            printf("Error: Input string contains consecutive commas without a number between them.\n");
-            free(str);
-            exit(0);
-        }
-    }
 
     // Tokenize the string by commas
     token = strtok(str, ",");
@@ -97,17 +80,12 @@ void parse_numbers(const char* input, int* numbers, int* count) {
 
         // Check for empty token (e.g., ",,")
         if (strlen(token) == 0) {
-            printf("Error: Input string contains consecutive commas without a number between them.\n");
-            free(str);
-            exit(0);
+            print_error(TWO_COMMAS, line, current_processed_file);
         }
 
         numbers[(*count)++] = atoi(token);
         token = strtok(NULL, ",");
     }
-
-    // Free the allocated copy of the string
-    free(str);
 }
 
 char* trimAllWhitespace(char* str) {

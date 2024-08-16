@@ -74,7 +74,7 @@ static char* saved_names[] = {
 char* trimWhiteSpaceFromStart(char* str);
 int isComment(char* line);
 void remove_all_spaces(char* str);
-void parse_numbers(const char* input, int* numbers, int* count);
+void parse_numbers(const char* input, int* numbers, int* count, int line);
 char* trimAllWhitespace(char* str);
 int isNewLine(char* line);
 void removeNewLine(char* str);

@@ -260,7 +260,6 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
                         *label = '\0';
                         label = orig_label;
                         src_word.symb_name = label;
-                        printf("1");
                     }
                     word_list_position++;
                     *word_list_position = src_word;
@@ -280,7 +279,6 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
                         *label = '\0';
                         label = orig_label;
                         dest_word.symb_name = label;
-                        printf("1");
                     }
                     word_list_position++;
                     *word_list_position = dest_word;

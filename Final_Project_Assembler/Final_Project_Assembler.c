@@ -2,6 +2,7 @@
 #include "preprocessor.h"
 #include "firstPass.h"
 #include "utilities.h"
+#include "errors.h"
 #pragma warning(disable : 4996)
 
 char* current_processed_file = NULL;
@@ -28,8 +29,7 @@ int main(int argc, char* argv[])
         FILE* assembly_file = fopen(filename, "r");
 
         if (assembly_file == NULL) {
-            printf("File doesn't exist");
-            continue;
+            print_external_error(FILE_NOT_EXIST, current_processed_file, filename);
         }
 
         /* Open a post macro file, change file name by changing only extension */
@@ -38,8 +38,7 @@ int main(int argc, char* argv[])
         FILE* post_macro_file = fopen(filename, "w");
 
         if (post_macro_file == NULL) {
-            perror(filename);
-            continue;
+            print_external_error(FILE_NOT_OPEN, current_processed_file, filename);
         }
 
         if (preprocessFile(assembly_file, post_macro_file, argv[i]))
@@ -54,7 +53,7 @@ int main(int argc, char* argv[])
         post_macro_file = fopen(filename, "r");
 
         if (post_macro_file == NULL) {
-            perror(filename);
+            print_external_error(FILE_NOT_OPEN, current_processed_file, filename);
             continue;
         }
        

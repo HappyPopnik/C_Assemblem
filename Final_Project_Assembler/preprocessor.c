@@ -119,7 +119,6 @@ void integrateMacros(FILE* sourcefp, FILE* destfp, macro* head)
 {
 	int in_macr = 0;
 	char line[MAX_LINE_LENGTH];
-	printf("\n************\n");
 
 	while (fgets(line, sizeof(line), sourcefp)) {
 		char* trimmedLine = trimWhiteSpaceFromStart(line);

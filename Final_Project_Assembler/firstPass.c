@@ -80,29 +80,6 @@ void increaseDataSymbolsByIC(SymbolList *symbols, int ic)
 	}
 }
 
-/*To delete*/
-void printLinkedList(SymbolList* head) {
-	SymbolList* current = head;
-	while (current != NULL) {
-		printf("label: %s\n", current->label);
-		printf("dc: %d\n", current->dc);
-		printf("data_type: %d\n", current->data_type);
-		printf("------------\n");
-		current = current->next;
-	}
-}
-
-void printWordArray(MemoryArray* wordArray, int j) {
-	for (int i = 0; i < wordArray->size; ++i) 
-	{
-		printf("Word %d: bits = %s, mem_res = %d, location = %p\n", i, to_15bit_binary(wordArray->marray[i].bits), i, (void*)&wordArray->marray[i]);
-		if (wordArray->marray[i].bits == 0 && j==2)
-		{
-			printf("Label: %s\n", wordArray->marray[i].symb_name);
-		}
-	}
-}
-
 void startFirstPass(FILE* sourcefp, char *filename)
 {
 	int data_type = 0;
@@ -165,7 +142,7 @@ void startFirstPass(FILE* sourcefp, char *filename)
 			{
 				data_type = DATA;
 				start_pos = start_pos + 5;
-				parse_numbers(start_pos, numbersdataarray, &numbersdatacount);
+				parse_numbers(start_pos, numbersdataarray, &numbersdatacount, line_number);
 				iterating_index = 0;
 				for (int i = 0; i < numbersdatacount; i++)
 				{
@@ -300,19 +277,7 @@ void startFirstPass(FILE* sourcefp, char *filename)
 		}
 	}
 	increaseDataSymbolsByIC(data_symbols, ic);
-	/*
-	printf("**********************\n");
-	printLinkedList(data_symbols, 0);
-	printf("**********************\n");
-	printLinkedList(entry_symbols, 0);
-	printf("**********************\n");
-	printLinkedList(extern_symbols, 0);
-	printf("**********************\n");
-	printWordArray(data_array, 0);
-	printf("**********************\n");
-	printWordArray(instruction_array, 2);
-	printf("**********************\n");
-	*/
+
 	/* Finish first pass, moving to second pass */
 	startSecondPass(data_symbols, entry_symbols, extern_symbols, data_array, instruction_array, filename);
 	

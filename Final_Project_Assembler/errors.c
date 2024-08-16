@@ -10,6 +10,7 @@ Error errors[] = {
 	{ LABEL_LENGTH_EXCEEDED, "Label length too long"},
 	{ LABEL_NOT_FOUND, "label name not found"},
 	{ MISSING_QUOTES, "No quotes found at end of string declaration"},
+	{ TWO_COMMAS, "Two commas without number between them"},
 	{ INVALID_OPERATION, "operation given is invalid"},
 	{ INVALID_REGISTER, "Register numbner is not valid"},
 	{ NUMBER_CONVERSION_ERROR, "Error in number conversion from int to char"},
@@ -18,7 +19,8 @@ Error errors[] = {
 	{ TOO_MANY_ARGS, "There are too many arguemnts in this line"},
 	{ SYMBOL_ALREADY_EXISTS, "This symbol already exists in symbol table"},
 	{ LABEL_NOT_SYMBOLS, "Label not found in symbol table: "},
-	{ FILE_NOT_OPEN, "Cannot open the file: "}
+	{ FILE_NOT_OPEN, "Cannot open the file: "},
+	{ FILE_NOT_EXIST, "File does not exist: "}
 
 
 };
