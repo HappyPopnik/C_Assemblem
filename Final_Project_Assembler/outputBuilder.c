@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "outputBuilder.h"
 #include "utilities.h"
+#include "errors.h"
 
 #pragma warning(disable : 4996)
 
@@ -69,8 +70,7 @@ void makeOutputFiles(SymbolList* data_symbols, SymbolList* entry_symbols,
 
 	FILE* object_file = fopen(object_filename, "w");
 	if (object_file == NULL) {
-		printf("Error opening object file");
-		exit(1);
+		print_external_error(FILE_NOT_OPEN, current_processed_file, object_filename);
 	}
 	makeObjectFile(object_file, data_array, instruction_array);
 
@@ -81,6 +81,9 @@ void makeOutputFiles(SymbolList* data_symbols, SymbolList* entry_symbols,
 		strcpy(entries_filename, filename);
 		strcat(entries_filename, ".ent");
 		FILE* entries_file = fopen(entries_filename, "w");
+		if (entries_file == NULL) {
+			print_external_error(FILE_NOT_OPEN, current_processed_file, entries_filename);
+		}
 		makeEntriesFile(entries_file, entry_symbols);
 	}
 	
@@ -91,6 +94,9 @@ void makeOutputFiles(SymbolList* data_symbols, SymbolList* entry_symbols,
 		strcpy(extensions_filename, filename);
 		strcat(extensions_filename, ".ext");
 		FILE* extension_file = fopen(extensions_filename, "w");
+		if (extension_file == NULL) {
+			print_external_error(FILE_NOT_OPEN, current_processed_file, extensions_filename);
+		}
 		makeExternsFile(extension_file, extern_symbols);
 	}
 

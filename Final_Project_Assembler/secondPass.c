@@ -2,6 +2,7 @@
 #include "secondPass.h"
 #include "operations.h"
 #include "outputBuilder.h"
+#include "errors.h"
 
 void iterateThroughMemArray(MemoryArray* wordArray, SymbolList* data_symbols, SymbolList* external_symbols) {
 	for (int i = 0; i < wordArray->size; ++i)
@@ -47,8 +48,7 @@ void iterateThroughMemArray(MemoryArray* wordArray, SymbolList* data_symbols, Sy
 				if (!found_symbol)
 				/* if not found in external, its not anywhere. Illegal label detected. */
 				{
-					printf("label %s not found in symbol table.", label_name);
-					exit(1);
+					print_external_error(LABEL_NOT_SYMBOLS, current_processed_file, label_name);
 				}
 			}
 		}

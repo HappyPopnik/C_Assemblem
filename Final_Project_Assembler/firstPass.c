@@ -3,13 +3,13 @@
 #include "utilities.h"
 #include "operations.h"
 #include "secondPass.h"
+#include "errors.h"
 
-void symbolExists(SymbolList* head, const char* name) {
+void symbolExists(SymbolList* head, const char* name, int line_num) {
 	SymbolList* current = head;
 	while (current != NULL) {
 		if (strcmp(current->label, name) == 0) {
-			printf("Error: Symbol with name '%s' already exists.\n", name);
-			exit(1);
+			print_error(SYMBOL_ALREADY_EXISTS, line_num, current_processed_file);
 		}
 		current = current->next;
 	}
@@ -43,16 +43,15 @@ void addSymbolToTable(SymbolList** head, char* label, int dc, int data_type)
 	}
 }
 
-void checkMemorySize(int ic, int dc)
+void checkMemorySize(int ic, int dc, int line_num)
 {
 	if (ic + dc >= MAX_MEMORY_SIZE)
 	{
-		printf("Exceeded memory limit");
-		exit(1);
+		print_error(EXCEEDED_MEMORY_LIMIT, line_num, current_processed_file);
 	}
 }
 
-void jumpSpaceSepatation(char** line_pos)
+void jumpSpaceSepatation(char** line_pos, int line_number)
 {
 	if (**line_pos == ' ') /*Check for the space separation*/
 	{
@@ -60,8 +59,7 @@ void jumpSpaceSepatation(char** line_pos)
 	}
 	else
 	{
-		printf("No space separation.");
-		exit(1);
+		print_error(NO_SPACE_SEPARATION, line_number, current_processed_file);
 	}
 	while (*line_pos == ' ')
 	{
@@ -128,7 +126,7 @@ void startFirstPass(FILE* sourcefp, char *filename)
 	Word moveToMem;
 	while (fgets(line, sizeof(line), sourcefp) != NULL)
 	{
-		checkMemorySize(data_array->size, instruction_array->size);
+		checkMemorySize(data_array->size, instruction_array->size, line_number);
 		line_number++;
 		char* trimmedLine = trimWhiteSpaceFromStart(line);
 		if (isComment(trimmedLine) || isNewLine(line)) /* If it is a command line or nothing at all*/
@@ -141,13 +139,11 @@ void startFirstPass(FILE* sourcefp, char *filename)
 			size_t label_length = colon_pos - line;
 			/* Check if the label exceeds the maximum length */
 			if (label_length > MAX_LABEL_LENGTH) {
-				printf("Error: Label name too long.");
-				exit(1);
+				print_error(LABEL_LENGTH_EXCEEDED, line_number, current_processed_file);
 			}
 			if (colon_pos == 0)
 			{
-				printf("Error: No name present but colon.");
-				exit(1);
+				print_error(LABEL_NOT_FOUND, line_number, current_processed_file);
 			}
 			strncpy(label, line, label_length);
 			label[label_length] = '\0';
@@ -183,14 +179,13 @@ void startFirstPass(FILE* sourcefp, char *filename)
 			{
 				data_type = STRING;
 				start_pos = start_pos + 7;
-				jumpSpaceSepatation(&start_pos);
+				jumpSpaceSepatation(&start_pos, line_number);
 				if (*start_pos == '\"') {
 					start_pos++;
 					char* end_quote = strchr(start_pos, '"');
 					if (end_quote == NULL)
 					{
-						printf("Error. No quotes found at end of string declaration.");
-						exit(1);
+						print_error(MISSING_QUOTES, line_number, current_processed_file);
 					}
 					else
 					{
@@ -216,15 +211,14 @@ void startFirstPass(FILE* sourcefp, char *filename)
 				}
 				else
 				{
-					printf("Error. No quotes found after string declaration.");
-					exit(1);
+					print_error(MISSING_QUOTES, line_number, current_processed_file);
 				}
 			}
 			else if (strncmp(start_pos, ".extern", 7) == 0)
 			{
 				data_type = EXTERNAL;
 				start_pos = start_pos + 7;
-				jumpSpaceSepatation(&start_pos);
+				jumpSpaceSepatation(&start_pos, line_number);
 				char* label_ptr = label;
 				int count = 0;
 				int spacecount = 0;
@@ -240,14 +234,14 @@ void startFirstPass(FILE* sourcefp, char *filename)
 				label_ptr = label_ptr - spacecount;
 				*label_ptr = '\0'; /*Add null terminator instead of \n*/
 				label_ptr = label_ptr - count;
-				symbolExists(extern_symbols, label_ptr); /*Check if the new symbol already exists*/
+				symbolExists(extern_symbols, label_ptr, line_number); /*Check if the new symbol already exists*/
 				addSymbolToTable(&extern_symbols, label_ptr, 0, data_type); /*Add the symbol to the symbol table*/
 			}
 			else if (strncmp(start_pos, ".entry", 6) == 0)
 			{
 				data_type = ENTRY;
 				start_pos = start_pos + 6;
-				jumpSpaceSepatation(&start_pos);
+				jumpSpaceSepatation(&start_pos, line_number);
 				char* label_ptr = label;
 				int count = 0;
 				while (*start_pos != '\0') {
@@ -261,12 +255,12 @@ void startFirstPass(FILE* sourcefp, char *filename)
 				}
 				*label_ptr = '\0'; /* Add null terminator instead of \n */
 				label_ptr = label_ptr - count;
-				symbolExists(entry_symbols, label_ptr); /*Check if the new symbol already exists*/
+				symbolExists(entry_symbols, label_ptr, line_number); /*Check if the new symbol already exists*/
 				addSymbolToTable(&entry_symbols, label_ptr, 0, data_type); /*Add the symbol to the symbol table*/
 			}
 			if (is_symbol_flag && (data_type == DATA || data_type == STRING))
 			{
-				symbolExists(data_symbols, label); /*Check if the new symbol already exists*/
+				symbolExists(data_symbols, label, line_number); /*Check if the new symbol already exists*/
 				addSymbolToTable(&data_symbols, label, dc, data_type); /*Add the symbol to the symbol table*/
 			}
 		}
@@ -279,16 +273,15 @@ void startFirstPass(FILE* sourcefp, char *filename)
 			if (is_symbol_flag) /* Command and with label */
 			{
 				data_type = CODE;
-				symbolExists(data_symbols, label);
+				symbolExists(data_symbols, label, line_number);
 				addSymbolToTable(&data_symbols, label, ic + 100, data_type);
 				start_pos = colon_pos + 1;
-				jumpSpaceSepatation(&start_pos);
+				jumpSpaceSepatation(&start_pos, line_number);
 			}
 			int operation_index = operationExistsInOParray(start_pos);
 			if (operation_index == 0)
 			{
-				printf("Invalid operation: %s", start_pos);
-				exit(1);
+				print_error(INVALID_OPERATION, line_number, current_processed_file);
 			}
 			else
 			{

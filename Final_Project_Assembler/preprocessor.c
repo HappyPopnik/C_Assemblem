@@ -21,7 +21,6 @@ void isRestrictedName(const char* name, int *errors, int line_num) {
 	for (int i = 0; i < restrictedArraySize; i++) {
 		if (strcmp(saved_names[i], name) == 0) {
 			print_error(MACRO_ALREADY_EXISTS, line_num, current_processed_file);
-			exit(1);
 			*errors = 1;
 		}
 	}

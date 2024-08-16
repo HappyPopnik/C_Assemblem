@@ -40,7 +40,7 @@ int checkDeliveryOpt(int operation_index, int delivery_opt, int direction)
     
 }
 
-int getAddressingOption(char *position)
+int getAddressingOption(char *position, int line_num)
 {
     if (*position == '#')
     {
@@ -55,8 +55,7 @@ int getAddressingOption(char *position)
                 return INDIRECT_REG_ADDRESSING;
             }
         }
-        printf("Invalid Register name!");
-        exit(1);
+        print_error(INVALID_REGISTER, line_num, current_processed_file);
         
     }
     else
@@ -72,7 +71,7 @@ int getAddressingOption(char *position)
     }
 }
 
-int formatDirectOperandToInt(char* position)
+int formatDirectOperandToInt(char* position, int line)
 {
     const char* start = position;
     while (*start && *start != ',') start++;
@@ -85,8 +84,7 @@ int formatDirectOperandToInt(char* position)
     free(number_str);
     if (*endptr != '\0' && !(*endptr))
     {
-        printf("Error in number conversion.");
-        exit(1);
+        print_error(NUMBER_CONVERSION_ERROR, line, current_processed_file);
     }
     return number;
 }
@@ -99,13 +97,13 @@ int getIntRegFromOperand(char *pos)
     return number;
 }
 
-int operandIncoding(int delivery_opt, char *pos, int is_dest)
+int operandIncoding(int delivery_opt, char *pos, int is_dest, int line_num)
 {
     int word_encoding = 0;
     if (delivery_opt == IMMIDIATE_ADDRESSING)
     {
         pos++;
-        int value = formatDirectOperandToInt(pos);
+        int value = formatDirectOperandToInt(pos, line_num);
         if(is_dest)
             word_encoding = word_encoding + (value << 3);
         else
@@ -161,7 +159,7 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
         }
         else
         {
-            delivery_opt = getAddressingOption(pos);
+            delivery_opt = getAddressingOption(pos, line_num);
             /* Check if the delivery opt is allowed */
             if (checkDeliveryOpt(operation_index, delivery_opt, DESTINATION_DIRECTION))
             {
@@ -173,7 +171,7 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
                 word_encoding = 0;
                 /* Now encode the next word. */
                 int is_dest = 1;
-                word_encoding = operandIncoding(delivery_opt, pos, is_dest);
+                word_encoding = operandIncoding(delivery_opt, pos, is_dest, line_num);
                 if (delivery_opt == DIRECT_ADDRESSING)
                 {
                     char* label = malloc(strlen(pos));
@@ -184,7 +182,6 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
                     *label = '\0';
                     label = orig_label;
                     dest_word.symb_name = label;
-                    printf("1");
                 }
                 dest_word.bits = word_encoding;
                 word_list_position++;
@@ -192,8 +189,7 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
             }
             else
             {
-                printf("Illegal delivering option!");
-                exit(1);
+                print_error(ILLEGAL_DELIVERING, line_num, current_processed_file);
             }
         }
     }
@@ -206,8 +202,7 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
         */
         if (!containsCommaOrSpace(pos))
         {
-            printf("Need more than one argument for this operation!");
-            exit(1);
+            print_error(INSUFFICIENT_ARGUMENTS, line_num, current_processed_file);
         }
         else
         {
@@ -222,8 +217,8 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
             {
                 start_of_operand_2++;
             }
-            src_delivery_opt = getAddressingOption(pos);
-            dest_delivery_opt = getAddressingOption(start_of_operand_2);
+            src_delivery_opt = getAddressingOption(pos, line_num);
+            dest_delivery_opt = getAddressingOption(start_of_operand_2, line_num);
             if (checkDeliveryOpt(operation_index, dest_delivery_opt, DESTINATION_DIRECTION) && \
                 checkDeliveryOpt(operation_index, src_delivery_opt, SOURCE_DIRECTION))
             {
@@ -252,7 +247,7 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
                 else {
                     *size = 3;
                     int is_dest = 0;
-                    word_encoding = operandIncoding(src_delivery_opt, pos, is_dest);
+                    word_encoding = operandIncoding(src_delivery_opt, pos, is_dest, line_num);
                     src_word.bits = word_encoding;
                     if (src_delivery_opt == DIRECT_ADDRESSING)
                     {
@@ -271,7 +266,7 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
                     *word_list_position = src_word;
                     word_encoding = 0;
                     is_dest = 1;
-                    word_encoding = operandIncoding(dest_delivery_opt, start_of_operand_2, is_dest);
+                    word_encoding = operandIncoding(dest_delivery_opt, start_of_operand_2, is_dest, line_num);
                     dest_word.bits = word_encoding;
                     if (dest_delivery_opt == DIRECT_ADDRESSING)
                     {
@@ -293,26 +288,13 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
             }
             else
             {
-                printf("Wrong type of delivering method!");
-                exit(1);
+                print_error(ILLEGAL_DELIVERING, line_num, current_processed_file);
             }
         }
     }
     else
     {
-        printf("Too many arguemnt!");
-        exit(1);
-    }
-
-    Word* p = word_list;
-    /*
-    int size_of_words = *size;
-    while (size_of_words > 0)
-    {
-        printf("%d\n", p->bits);
-        p++;
-        size_of_words--;
+        print_error(TOO_MANY_ARGS, line_num, current_processed_file);
     }
     return word_list;
-    */
 }
