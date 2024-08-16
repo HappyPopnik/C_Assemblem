@@ -1,26 +1,28 @@
 #include <stdio.h>
 #include "preprocessor.h"
 #include "utilities.h"
+#include "errors.h"
 
 #pragma warning(disable : 4996)
 
-void macroExists(macro* head, const char* name) {
+void macroExists(macro* head, const char* name, int *errors, int line_num) {
 	macro* current = head;
 	while (current != NULL) {
 		if (strcmp(current->name, name) == 0) {
-			printf("Error: Macro with name '%s' already exists.\n", name);
-			exit(1);
+			print_error(MACRO_ALREADY_EXISTS, line_num, current_processed_file);
+			*errors = 1;
 		}
 		current = current->next;
 	}
 }
 
-void isRestrictedName(const char* name) {
+void isRestrictedName(const char* name, int *errors, int line_num) {
 	size_t restrictedArraySize = sizeof(saved_names) / sizeof(saved_names[0]);
 	for (int i = 0; i < restrictedArraySize; i++) {
 		if (strcmp(saved_names[i], name) == 0) {
-			printf("Error: Macro with name '%s' is forbidden.\n", name);
+			print_error(MACRO_ALREADY_EXISTS, line_num, current_processed_file);
 			exit(1);
+			*errors = 1;
 		}
 	}
 }
@@ -64,7 +66,7 @@ macro* findMacro(macro* head, const char* name) {
 	return NULL;
 }
 
-macro* createMacroList(FILE* sourcefp)//, FILE* destfp)
+macro* createMacroList(FILE* sourcefp, int *errors)
 {
 	int macr_exists_flag = 0;
 	macro *head = NULL;
@@ -72,11 +74,11 @@ macro* createMacroList(FILE* sourcefp)//, FILE* destfp)
 	char macroName[MAX_MACRO_NAME_LEN];
 	char *macroText = NULL;
 	size_t macroTextSize = 0;
+	int line_number = 1;
 
 	while (fgets(line, sizeof(line), sourcefp))
 	{
 		char* trimmedLine = trimWhiteSpaceFromStart(line);
-		printf(trimmedLine);
 		if (macr_exists_flag)
 		{
 			if (strncmp(trimmedLine, "endmacr", 7) == 0) 
@@ -101,14 +103,15 @@ macro* createMacroList(FILE* sourcefp)//, FILE* destfp)
 			if (strncmp(trimmedLine, "macr", 4) == 0) {
 				// Start of a new macro definition
 				sscanf(trimmedLine, "macr %255s", macroName);
-				macroExists(head, macroName);
-				isRestrictedName(macroName);
+				macroExists(head, macroName, &errors, line_number);
+				isRestrictedName(macroName, &errors, line_number);
 				macr_exists_flag = 1;
 				macroText = (char*)malloc(1);
 				macroText[0] = '\0';
 				macroTextSize = 0;
 			}
 		}
+		line_number++;
 	}
 	return head;
 }
@@ -148,9 +151,14 @@ void integrateMacros(FILE* sourcefp, FILE* destfp, macro* head)
 	}
 }
 
-void preprocessFile(FILE* sourcefp, FILE* destfp)
+int preprocessFile(FILE* sourcefp, FILE* destfp)
 {
-	macro* head = createMacroList(sourcefp);
+	int errors = 0;
+	macro* head = createMacroList(sourcefp, &errors);
+	if (errors)
+	{
+		return 0;
+	}
 	fseek(sourcefp, 0, SEEK_SET);
 	integrateMacros(sourcefp, destfp, head);
 }

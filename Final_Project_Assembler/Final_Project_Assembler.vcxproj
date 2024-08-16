@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="errors.c" />
     <ClCompile Include="Final_Project_Assembler.c" />
     <ClCompile Include="firstPass.c" />
     <ClCompile Include="memory_structs.c" />
@@ -149,6 +150,7 @@
     <ClCompile Include="utilities.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="errors.h" />
     <ClInclude Include="firstPass.h" />
     <ClInclude Include="memory_structs.h" />
     <ClInclude Include="operations.h" />

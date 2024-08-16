@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "operations.h"
+#include "errors.h"
 
 int operationExistsInOParray(char* operation_name) {
     for (size_t i = 0; i <= NUM_OF_OPERATIONS; i++) {
@@ -124,7 +125,7 @@ int operandIncoding(int delivery_opt, char *pos, int is_dest)
     return word_encoding;
 }
 
-Word* MakeWord(char* pos, int operation_index, int *size)
+Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
 {
     char* temp = pos;
     Word instruction_word;
@@ -156,8 +157,7 @@ Word* MakeWord(char* pos, int operation_index, int *size)
         *size = 2;
         if (containsCommaOrSpace(pos))
         {
-            printf("Expected one arguement!");
-            exit(1);
+            print_error(TWO_ARGUMENTS_INSTEAD_OF_ONE, line_num, current_processed_file);
         }
         else
         {
@@ -305,9 +305,8 @@ Word* MakeWord(char* pos, int operation_index, int *size)
     }
 
     Word* p = word_list;
+    /*
     int size_of_words = *size;
-    printf("\n~~~~~~~~~~~~~~~~*************\n");
-    printf("%s\n", temp);
     while (size_of_words > 0)
     {
         printf("%d\n", p->bits);
@@ -315,4 +314,5 @@ Word* MakeWord(char* pos, int operation_index, int *size)
         size_of_words--;
     }
     return word_list;
+    */
 }

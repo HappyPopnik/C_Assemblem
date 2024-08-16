@@ -74,15 +74,50 @@ void formatEntries(SymbolList* entry_symbols, SymbolList* data_symbols)
 	}
 }
 
+void formatExterns(SymbolList* extern_symbols, MemoryArray *instruction_array)
+{
+	SymbolList* externs_current = extern_symbols;
+	for (int i = 0; i < instruction_array->size; i++)
+	{
+		if (instruction_array->marray[i].bits == 1)
+		{
+			while (externs_current != NULL)
+			{
+				if (strcmp(instruction_array->marray[i].symb_name, externs_current->label) == 0)
+				{				
+					// Reallocate to add more space as externs_count increases
+					externs_current->extern_placements = realloc(externs_current->extern_placements, sizeof(int) * (externs_current->externs_count + 1));
+					externs_current->extern_placements[externs_current->externs_count] = i + 100;
+					externs_current->externs_count = externs_current->externs_count + 1;
+				}
+
+				externs_current = externs_current->next;
+			}
+			externs_current = extern_symbols;
+		}
+		
+	}
+	/*
+	Todo:
+	1) iterate through instruction array
+	2) for each instruction check if bits are set to 1
+	3) if yes, get its name, and iterate through extern symbols
+	3) add to the extern placements of the symbol the dc number.
+	*/
+}
+
 void startSecondPass(SymbolList* data_symbols, SymbolList* entry_symbols,
-	SymbolList* extern_symbols, MemoryArray* data_array, MemoryArray* instruction_array)
+	SymbolList* extern_symbols, MemoryArray* data_array, MemoryArray* instruction_array, char* filename)
 {
 	iterateThroughMemArray(instruction_array, data_symbols, extern_symbols);
 
 	formatEntries(entry_symbols, data_symbols);
 
-	makeOutputFiles(data_symbols, entry_symbols, extern_symbols, data_array, instruction_array);
+	formatExterns(extern_symbols, instruction_array);
 
+	makeOutputFiles(data_symbols, entry_symbols, extern_symbols, data_array, instruction_array, filename);
+
+	/*
 	printf("*******************************************************\n");
 	printLinkedList(data_symbols, 0);
 	printf("**********************\n");
@@ -94,5 +129,6 @@ void startSecondPass(SymbolList* data_symbols, SymbolList* entry_symbols,
 	printf("**********************\ninstruction array: \n");
 	printWordArray(instruction_array, 2);
 	printf("**********************\n");
+	*/
 
 }

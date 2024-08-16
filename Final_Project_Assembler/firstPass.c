@@ -22,6 +22,12 @@ void addSymbolToTable(SymbolList** head, char* label, int dc, int data_type)
 	newSymbol->dc = dc;
 	newSymbol->data_type = data_type;
 	newSymbol->next = NULL;
+	if (data_type == EXTERNAL)
+	{
+		newSymbol->externs_count = 0; /* Initialize extern count */
+		newSymbol->extern_placements = malloc(sizeof(int) * (newSymbol->externs_count));
+	}
+		
 	if (*head == NULL)
 	{
 		*head = newSymbol;
@@ -99,11 +105,12 @@ void printWordArray(MemoryArray* wordArray, int j) {
 	}
 }
 
-void startFirstPass(FILE* sourcefp)
+void startFirstPass(FILE* sourcefp, char *filename)
 {
 	int data_type = 0;
 	int ic, dc = 0;
 	int asciichar;
+	int line_number = 0;
 	size_t iterating_index = 0;
 	MemoryArray *data_array = createMemoryArray();
 	MemoryArray *instruction_array = createMemoryArray();
@@ -122,6 +129,7 @@ void startFirstPass(FILE* sourcefp)
 	while (fgets(line, sizeof(line), sourcefp) != NULL)
 	{
 		checkMemorySize(data_array->size, instruction_array->size);
+		line_number++;
 		char* trimmedLine = trimWhiteSpaceFromStart(line);
 		if (isComment(trimmedLine) || isNewLine(line)) /* If it is a command line or nothing at all*/
 			continue;
@@ -266,6 +274,7 @@ void startFirstPass(FILE* sourcefp)
 		{
 			char* start_pos = line;
 			start_pos = trimWhiteSpaceFromStart(line);
+			trimTrailingSpaces(start_pos);
 			ic = instruction_array->size;
 			if (is_symbol_flag) /* Command and with label */
 			{
@@ -285,7 +294,7 @@ void startFirstPass(FILE* sourcefp)
 			{
 				Word* words_to_mem;
 				int amount;
-				words_to_mem = MakeWord(start_pos, operation_index, &amount);
+				words_to_mem = MakeWord(start_pos, operation_index, &amount, line_number);
 				int L = amount;
 				while (amount > 0)
 				{
@@ -298,6 +307,7 @@ void startFirstPass(FILE* sourcefp)
 		}
 	}
 	increaseDataSymbolsByIC(data_symbols, ic);
+	/*
 	printf("**********************\n");
 	printLinkedList(data_symbols, 0);
 	printf("**********************\n");
@@ -309,8 +319,8 @@ void startFirstPass(FILE* sourcefp)
 	printf("**********************\n");
 	printWordArray(instruction_array, 2);
 	printf("**********************\n");
-
+	*/
 	/* Finish first pass, moving to second pass */
-	startSecondPass(data_symbols, entry_symbols, extern_symbols, data_array, instruction_array);
+	startSecondPass(data_symbols, entry_symbols, extern_symbols, data_array, instruction_array, filename);
 	
 }

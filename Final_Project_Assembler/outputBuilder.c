@@ -24,7 +24,7 @@ void makeObjectFile(FILE* file, MemoryArray* data_array, MemoryArray* instructio
 	fclose(file);
 }
 
-void makeEntriesFile(FILE* file, SymbolList* entry_symbols, SymbolList* data_symbols)
+void makeEntriesFile(FILE* file, SymbolList* entry_symbols)
 {
 	SymbolList *entry_current = entry_symbols;
 	while (entry_current != NULL)
@@ -37,24 +37,62 @@ void makeEntriesFile(FILE* file, SymbolList* entry_symbols, SymbolList* data_sym
 	fclose(file);
 }
 
-void makeOutputFiles(SymbolList* data_symbols, SymbolList* entry_symbols,
-	SymbolList* extern_symbols, MemoryArray* data_array, MemoryArray* instruction_array)
+void makeExternsFile(FILE* file, SymbolList* extern_symbols)
 {
-	FILE* file = fopen("C:\\Users\\okopn\\Desktop\\university\\clab\\output.txt", "w");
-	if (file == NULL) {
-		printf("Error opening file");
+	SymbolList* extern_current = extern_symbols;
+	while (extern_current != NULL)
+	{
+		char* label = extern_current->label;
+		for (int i = 0; i < extern_current->externs_count; i++)
+		{
+			int line = extern_current->extern_placements[i];
+			fprintf(file, "%s\t%04d\n", label, line);
+		}
+		
+		extern_current = extern_current->next;
+	}
+	fclose(file);
+}
+
+
+
+void makeOutputFiles(SymbolList* data_symbols, SymbolList* entry_symbols,
+	SymbolList* extern_symbols, MemoryArray* data_array, MemoryArray* instruction_array, char* filename)
+{
+
+	char object_filename[MAX_FILE_NAME_LENGTH];
+	object_filename[0] = '\0';
+	
+	strcpy(object_filename, filename);
+
+	strcat(object_filename, ".ob");
+
+	FILE* object_file = fopen(object_filename, "w");
+	if (object_file == NULL) {
+		printf("Error opening object file");
 		exit(1);
 	}
-	makeObjectFile(file, data_array, instruction_array);
+	makeObjectFile(object_file, data_array, instruction_array);
 
-	FILE* file2 = fopen("C:\\Users\\okopn\\Desktop\\university\\clab\\outputentries.txt", "w");
-
-	if(entry_symbols!=NULL)
-		makeEntriesFile(file2, entry_symbols, data_symbols);
-
-
-	// Close the file
+	if (entry_symbols != NULL)
+	{
+		char entries_filename[MAX_FILE_NAME_LENGTH];
+		entries_filename[0] = '\0';
+		strcpy(entries_filename, filename);
+		strcat(entries_filename, ".ent");
+		FILE* entries_file = fopen(entries_filename, "w");
+		makeEntriesFile(entries_file, entry_symbols);
+	}
 	
+	if (extern_symbols != NULL)
+	{
+		char extensions_filename[MAX_FILE_NAME_LENGTH];
+		extensions_filename[0] = '\0';
+		strcpy(extensions_filename, filename);
+		strcat(extensions_filename, ".ext");
+		FILE* extension_file = fopen(extensions_filename, "w");
+		makeExternsFile(extension_file, extern_symbols);
+	}
 
 
 }

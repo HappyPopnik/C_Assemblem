@@ -70,4 +70,4 @@ static registry registries[] = {
 };
 
 
-Word* MakeWord(char* pos, int operation_index, int* size);
+Word* MakeWord(char* pos, int operation_index, int* size, int line_num);

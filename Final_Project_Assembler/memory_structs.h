@@ -15,6 +15,8 @@ typedef struct SymbolList {
     char* label;
     int data_type;
     int dc;
+    int* extern_placements;
+    int externs_count;
     struct SymbolList* next;
 } SymbolList;
 

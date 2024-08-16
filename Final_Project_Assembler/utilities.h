@@ -1,5 +1,9 @@
 #pragma once
 
+extern char* current_processed_file;
+
+#define MAX_FILE_NAME_LENGTH 256
+
 #define MAX_LINE_LENGTH 81
 
 #define MAX_MEMORY_SIZE 4096
@@ -76,3 +80,4 @@ int isNewLine(char* line);
 void removeNewLine(char* str);
 char* to_15bit_binary(int n);
 void intToOctalString(int num, char* str);
+void trimTrailingSpaces(char* str);

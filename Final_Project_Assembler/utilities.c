@@ -161,6 +161,15 @@ char* to_15bit_binary(int n) {
 }
 
 void intToOctalString(int num, char* str) {
-    // Format as 5 characters wide, padded with zeros
+    /* Format as 5 characters wide, padded with zeros */
     snprintf(str, 6, "%05o", num);
+}
+
+void trimTrailingSpaces(char* str) {
+    if (str == NULL) return; 
+    int len = strlen(str);
+    while (len > 0 && str[len - 1] == ' ') {
+        len--;
+    }
+    str[len] = '\0';
 }

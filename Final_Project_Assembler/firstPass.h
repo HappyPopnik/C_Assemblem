@@ -1,5 +1,1 @@
-
-
-
-
-void startFirstPass(FILE* sourcefp);
+void startFirstPass(FILE* sourcefp, char* filename);
