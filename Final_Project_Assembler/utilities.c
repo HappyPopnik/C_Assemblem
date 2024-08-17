@@ -33,14 +33,14 @@ int containsCommaOrSpace(char* pos)
     return 0;
 }
 
-void remove_all_spaces(char* str) {
+void removeAllSpaces(char* str) {
     char* src = str;
     char* dst = str;
     int in_number = 0;
 
     while (*src) {
         if (isdigit(*src) || (*src == '-' && (src == str || !isdigit(*(src - 1))))) {
-            // Handle negative sign if it's at the beginning or after a comma
+            /* allow negative sign at start of number*/
             if (*src == '-') {
                 *dst++ = *src++;
                 continue;
@@ -52,7 +52,7 @@ void remove_all_spaces(char* str) {
             if (in_number) {
                 *dst++ = *src;
                 if (*src == ',') {
-                    in_number = 0; // End of number
+                    in_number = 0;
                 }
             }
             src++;
@@ -61,26 +61,25 @@ void remove_all_spaces(char* str) {
             *dst++ = *src++;
         }
     }
-    *dst = '\0'; // Null-terminate the modified string
+    *dst = '\0'; /* Null - terminate the modified string */
 }
 
-void parse_numbers(const char* input, int* numbers, int* count, int line) {
+void parseNumbers(const char* input, int* numbers, int* count, int line) {
     *numbers = NULL;
     char* str = strdup(input);
     char* token;
     *count = 0;
 
-    remove_all_spaces(str);
+    removeAllSpaces(str);
 
-    // Tokenize the string by commas
     token = strtok(str, ",");
     while (token != NULL) {
-        // Trim leading and trailing whitespace from each token
+        /* Remove whitespace */
         token = trimAllWhitespace(token);
 
-        // Check for empty token (e.g., ",,")
+        /* Check for ,, situation */
         if (strlen(token) == 0) {
-            print_error(TWO_COMMAS, line, current_processed_file);
+            printError(TWO_COMMAS, line, current_processed_file);
         }
 
         numbers[(*count)++] = atoi(token);
@@ -91,24 +90,22 @@ void parse_numbers(const char* input, int* numbers, int* count, int line) {
 char* trimAllWhitespace(char* str) {
     char* start, * end;
 
-    // Trim leading space
     start = str;
     while (*start == ' ') {
         start++;
     }
 
-    // If the string is all spaces
+    /* If the staring is spaces only */
     if (*start == '\0') {
         return start;
     }
 
-    // Trim trailing space
     end = start + strlen(start) - 1;
     while (end > start && *end == ' ') {
         end--;
     }
 
-    // Write new null terminator
+    /* New null terminator */
     *(end + 1) = '\0';
 
     return start;
@@ -117,25 +114,10 @@ char* trimAllWhitespace(char* str) {
 void removeNewLine(char* str) {
     char* end = str + strlen(str) - 1;
 
-    // Check if the last character is '\n' and replace it with '\0'
+    /* Check if the last character is '\n' and replace it with '\0' */
     if (end >= str && *end == '\n') {
         *end = '\0';
     }
-}
-char* to_15bit_binary(int n) {
-    static char binary_str[16]; // 15 bits + null terminator
-    int i;
-
-    if (n < 0 || n > 32767) { // 15-bit maximum value
-        return NULL; // Out of range
-    }
-
-    for (i = 0; i < 15; i++) {
-        binary_str[i] = (n & (1 << (14 - i))) ? '1' : '0';
-    }
-
-    binary_str[15] = '\0'; // Null terminator
-    return binary_str;
 }
 
 void intToOctalString(int num, char* str) {

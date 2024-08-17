@@ -55,7 +55,7 @@ int getAddressingOption(char *position, int line_num)
                 return INDIRECT_REG_ADDRESSING;
             }
         }
-        print_error(INVALID_REGISTER, line_num, current_processed_file);
+        printError(INVALID_REGISTER, line_num, current_processed_file);
         
     }
     else
@@ -84,7 +84,7 @@ int formatDirectOperandToInt(char* position, int line)
     free(number_str);
     if (*endptr != '\0' && !(*endptr))
     {
-        print_error(NUMBER_CONVERSION_ERROR, line, current_processed_file);
+        printError(NUMBER_CONVERSION_ERROR, line, current_processed_file);
     }
     return number;
 }
@@ -155,7 +155,7 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
         *size = 2;
         if (containsCommaOrSpace(pos))
         {
-            print_error(TWO_ARGUMENTS_INSTEAD_OF_ONE, line_num, current_processed_file);
+            printError(TWO_ARGUMENTS_INSTEAD_OF_ONE, line_num, current_processed_file);
         }
         else
         {
@@ -189,7 +189,7 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
             }
             else
             {
-                print_error(ILLEGAL_DELIVERING, line_num, current_processed_file);
+                printError(ILLEGAL_DELIVERING, line_num, current_processed_file);
             }
         }
     }
@@ -202,7 +202,7 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
         */
         if (!containsCommaOrSpace(pos))
         {
-            print_error(INSUFFICIENT_ARGUMENTS, line_num, current_processed_file);
+            printError(INSUFFICIENT_ARGUMENTS, line_num, current_processed_file);
         }
         else
         {
@@ -228,10 +228,10 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
                 /* Append the instruction word */
                 *word_list = instruction_word;
                 word_encoding = 0;
-                if ((src_delivery_opt == INDIRECT_REG_ADDRESSING\
-                    || src_delivery_opt == DIRECT_REG_ADDRESSING)\
-                    && (dest_delivery_opt == INDIRECT_REG_ADDRESSING\
-                        || dest_delivery_opt == DIRECT_REG_ADDRESSING))
+                if (((src_delivery_opt == INDIRECT_REG_ADDRESSING)\
+                    || (src_delivery_opt == DIRECT_REG_ADDRESSING))\
+                    && ((dest_delivery_opt == INDIRECT_REG_ADDRESSING)\
+                        || (dest_delivery_opt == DIRECT_REG_ADDRESSING)))
                 {
                     *size = 2;
                     /* In this case the next word will contain both registries */
@@ -286,13 +286,13 @@ Word* MakeWord(char* pos, int operation_index, int *size, int line_num)
             }
             else
             {
-                print_error(ILLEGAL_DELIVERING, line_num, current_processed_file);
+                printError(ILLEGAL_DELIVERING, line_num, current_processed_file);
             }
         }
     }
     else
     {
-        print_error(TOO_MANY_ARGS, line_num, current_processed_file);
+        printError(TOO_MANY_ARGS, line_num, current_processed_file);
     }
     return word_list;
 }

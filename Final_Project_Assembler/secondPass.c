@@ -84,7 +84,7 @@ void formatExterns(SymbolList* extern_symbols, MemoryArray *instruction_array)
 			{
 				if (strcmp(instruction_array->marray[i].symb_name, externs_current->label) == 0)
 				{				
-					// Reallocate to add more space as externs_count increases
+					/* Reallocate to add more space as externs_count increases */
 					externs_current->extern_placements = realloc(externs_current->extern_placements, sizeof(int) * (externs_current->externs_count + 1));
 					externs_current->extern_placements[externs_current->externs_count] = i + 100;
 					externs_current->externs_count = externs_current->externs_count + 1;
@@ -96,13 +96,6 @@ void formatExterns(SymbolList* extern_symbols, MemoryArray *instruction_array)
 		}
 		
 	}
-	/*
-	Todo:
-	1) iterate through instruction array
-	2) for each instruction check if bits are set to 1
-	3) if yes, get its name, and iterate through extern symbols
-	3) add to the extern placements of the symbol the dc number.
-	*/
 }
 
 void startSecondPass(SymbolList* data_symbols, SymbolList* entry_symbols,

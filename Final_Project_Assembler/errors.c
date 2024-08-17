@@ -20,12 +20,13 @@ Error errors[] = {
 	{ SYMBOL_ALREADY_EXISTS, "This symbol already exists in symbol table"},
 	{ LABEL_NOT_SYMBOLS, "Label not found in symbol table: "},
 	{ FILE_NOT_OPEN, "Cannot open the file: "},
-	{ FILE_NOT_EXIST, "File does not exist: "}
+	{ FILE_NOT_EXIST, "File does not exist: "},
+	{ WRONG_COMMANDLINE, "Wrong commandline, correct useage: assembler [assemblyfile1] [assemblyfile2] .."}
 
 
 };
 
-void print_error(int error_code, int line, char* file_name)
+void printError(int error_code, int line, char* file_name)
 {
 	printf("Error in file: %s, line: %d: %s\n", file_name, line, errors[error_code].error_message);
 }

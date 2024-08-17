@@ -10,8 +10,8 @@ char* current_processed_file = NULL;
 int main(int argc, char* argv[])
 {
     if (argc < 2) {
-        fprintf(stderr, "Usage: %s <filename1> <filename2> ...\n", argv[0]);
-        return 1;
+        print_external_error(WRONG_COMMANDLINE, NULL, NULL);
+        exit(1);
     }
 
     /* Iterate through the files */
@@ -34,32 +34,20 @@ int main(int argc, char* argv[])
 
         /* Open a post macro file, change file name by changing only extension */
         strcpy(strrchr(filename, '.') + 1, "am");
-
-        FILE* post_macro_file = fopen(filename, "w");
-
-        if (post_macro_file == NULL) {
-            print_external_error(FILE_NOT_OPEN, current_processed_file, filename);
-        }
-
-        if (preprocessFile(assembly_file, post_macro_file, argv[i]))
+        
+        if (preprocessFile(assembly_file, filename, argv[i]) == 0)
         {
             /* Macro listing failed because of errors */
             continue;
         }
-
         fclose(assembly_file);
-        fclose(post_macro_file);
-        
-        post_macro_file = fopen(filename, "r");
-
+        FILE *post_macro_file = fopen(filename, "r");
         if (post_macro_file == NULL) {
             print_external_error(FILE_NOT_OPEN, current_processed_file, filename);
             continue;
         }
-       
         startFirstPass(post_macro_file, argv[i]);
 
-        // Close the file
         fclose(post_macro_file);
     }
 }

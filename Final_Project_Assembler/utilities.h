@@ -1,43 +1,15 @@
 #pragma once
 
+/* Global variable to the current processed file the assembler handles */
 extern char* current_processed_file;
 
+/* Meta defining types of the project */
 #define MAX_FILE_NAME_LENGTH 256
-
 #define MAX_LINE_LENGTH 81
-
 #define MAX_MEMORY_SIZE 4096
-
 #define MAX_LABEL_LENGTH 31
 
-#define DATA 1
-
-#define STRING 2
-
-#define EXTERNAL 3
-
-#define ENTRY 4
-
-#define CODE 5
-
-#define BIN_TO_INT(b) ( \
-    ((b & 0b1) << 0) | \
-    ((b & 0b10) >> 1) | \
-    ((b & 0b100) >> 2) | \
-    ((b & 0b1000) >> 3) | \
-    ((b & 0b10000) >> 4) | \
-    ((b & 0b100000) >> 5) | \
-    ((b & 0b1000000) >> 6) | \
-    ((b & 0b10000000) >> 7) | \
-    ((b & 0b100000000) >> 8) | \
-    ((b & 0b1000000000) >> 9) | \
-    ((b & 0b10000000000) >> 10) | \
-    ((b & 0b100000000000) >> 11) | \
-    ((b & 0b1000000000000) >> 12) | \
-    ((b & 0b10000000000000) >> 13) | \
-    ((b & 0b100000000000000) >> 14) \
-)
-
+/* All saved names which label or symbol is not allowed to be named as */
 static char* saved_names[] = {
 	"mov",
 	"cmp",
@@ -72,12 +44,68 @@ static char* saved_names[] = {
 };
 
 char* trimWhiteSpaceFromStart(char* str);
+/* @ Function: trimWhiteSpaceFromStart(char* str)
+   @ Arguments: The function takes a pointer to a string (char* str).
+   @ Description: This function removes whitespace from the input string.
+   It iterates through the string until it finds the first non-whitespace character.
+*/
+
 int isComment(char* line);
-void remove_all_spaces(char* str);
-void parse_numbers(const char* input, int* numbers, int* count, int line);
+/* @ Function: isComment(char* line)
+   @ Arguments: The function takes a pointer to a string (char* line).
+   @ Description: This function checks if the given line starts with a ';'.
+*/
+
+void removeAllSpaces(char* str);
+/* @ Function: removeAllSpaces(char* str)
+   @ Arguments: The function takes a pointer to a string (char* str).
+   @ Description: This function removes all spaces from the input string. It iterates through the string.
+*/
+
+int containsCommaOrSpace(char* pos);
+/* @ Function: containsCommaOrSpace(char* pos)
+   @ Arguments: The function takes a pointer to a string (char* pos).
+   @ Description: This function iterates the input string to determine if it contains ','
+   or ' '.
+*/
+
+void parseNumbers(const char* input, int* numbers, int* count, int line);
+/* @ Function: parseNumbers(const char* input, int* numbers, int* count, int line)
+   @ Arguments: The function takes a string (const char* input), an array of integers (int* numbers),
+				a pointer to an integer (int* count), and an integer representing the line number (int line).
+   @ Description: This function parses a comma separated string of numbers. It first removes all spaces
+   from the input string and then splits the string into tokens based on commas. Each token is
+   converted to integer and stored in the numbers array.
+*/
+
 char* trimAllWhitespace(char* str);
+/* @ Function: trimAllWhitespace(char* str)
+   @ Arguments: The function takes a pointer to a string (char* str).
+   @ Description: This function removes all leading and trailing whitespace from the input string.
+*/
+
 int isNewLine(char* line);
+/* @ Function: isNewLine(char* line)
+   @ Arguments: The function takes a pointer to a string (char* line).
+   @ Description: This function checks if the given line is a newline character ('\n').
+*/
+
 void removeNewLine(char* str);
-char* to_15bit_binary(int n);
+/* @ Function: removeNewLine(char* str)
+   @ Arguments: The function takes a pointer to a string (char* str).
+   @ Description: This function checks if the last character of the input string is a newline character ('\n').
+   If it is, the function replaces it with a null terminator.
+*/
+
 void intToOctalString(int num, char* str);
+/* @ Function: intToOctalString(int num, char* str)
+   @ Arguments: The function takes an integer (int num) and a pointer to a string (char* str).
+   @ Description: This function converts the given integer to its octal representation and
+   formats it as a string that is 5 characters wide.
+*/
+
 void trimTrailingSpaces(char* str);
+/* @ Function: trimTrailingSpaces(char* str)
+   @ Arguments: The function takes a pointer to a string (char* str).
+   @ Description: This function removes any trailing spaces from the input string.
+*/

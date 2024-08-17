@@ -9,7 +9,7 @@ void symbolExists(SymbolList* head, const char* name, int line_num) {
 	SymbolList* current = head;
 	while (current != NULL) {
 		if (strcmp(current->label, name) == 0) {
-			print_error(SYMBOL_ALREADY_EXISTS, line_num, current_processed_file);
+			printError(SYMBOL_ALREADY_EXISTS, line_num, current_processed_file);
 		}
 		current = current->next;
 	}
@@ -47,7 +47,7 @@ void checkMemorySize(int ic, int dc, int line_num)
 {
 	if (ic + dc >= MAX_MEMORY_SIZE)
 	{
-		print_error(EXCEEDED_MEMORY_LIMIT, line_num, current_processed_file);
+		printError(EXCEEDED_MEMORY_LIMIT, line_num, current_processed_file);
 	}
 }
 
@@ -59,7 +59,7 @@ void jumpSpaceSepatation(char** line_pos, int line_number)
 	}
 	else
 	{
-		print_error(NO_SPACE_SEPARATION, line_number, current_processed_file);
+		printError(NO_SPACE_SEPARATION, line_number, current_processed_file);
 	}
 	while (*line_pos == ' ')
 	{
@@ -92,7 +92,6 @@ void startFirstPass(FILE* sourcefp, char *filename)
 	SymbolList* data_symbols = NULL;
 	SymbolList* extern_symbols = NULL;
 	SymbolList* entry_symbols = NULL;
-	//SymbolList** instruction_list;
 	int is_symbol_flag = 0;
 	char line[MAX_LINE_LENGTH];
 	char label[MAX_LABEL_LENGTH];
@@ -116,11 +115,11 @@ void startFirstPass(FILE* sourcefp, char *filename)
 			size_t label_length = colon_pos - line;
 			/* Check if the label exceeds the maximum length */
 			if (label_length > MAX_LABEL_LENGTH) {
-				print_error(LABEL_LENGTH_EXCEEDED, line_number, current_processed_file);
+				printError(LABEL_LENGTH_EXCEEDED, line_number, current_processed_file);
 			}
 			if (colon_pos == 0)
 			{
-				print_error(LABEL_NOT_FOUND, line_number, current_processed_file);
+				printError(LABEL_NOT_FOUND, line_number, current_processed_file);
 			}
 			strncpy(label, line, label_length);
 			label[label_length] = '\0';
@@ -142,7 +141,7 @@ void startFirstPass(FILE* sourcefp, char *filename)
 			{
 				data_type = DATA;
 				start_pos = start_pos + 5;
-				parse_numbers(start_pos, numbersdataarray, &numbersdatacount, line_number);
+				parseNumbers(start_pos, numbersdataarray, &numbersdatacount, line_number);
 				iterating_index = 0;
 				for (int i = 0; i < numbersdatacount; i++)
 				{
@@ -162,7 +161,7 @@ void startFirstPass(FILE* sourcefp, char *filename)
 					char* end_quote = strchr(start_pos, '"');
 					if (end_quote == NULL)
 					{
-						print_error(MISSING_QUOTES, line_number, current_processed_file);
+						printError(MISSING_QUOTES, line_number, current_processed_file);
 					}
 					else
 					{
@@ -188,7 +187,7 @@ void startFirstPass(FILE* sourcefp, char *filename)
 				}
 				else
 				{
-					print_error(MISSING_QUOTES, line_number, current_processed_file);
+					printError(MISSING_QUOTES, line_number, current_processed_file);
 				}
 			}
 			else if (strncmp(start_pos, ".extern", 7) == 0)
@@ -258,7 +257,7 @@ void startFirstPass(FILE* sourcefp, char *filename)
 			int operation_index = operationExistsInOParray(start_pos);
 			if (operation_index == 0)
 			{
-				print_error(INVALID_OPERATION, line_number, current_processed_file);
+				printError(INVALID_OPERATION, line_number, current_processed_file);
 			}
 			else
 			{
